@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottm mb-4"> Schedule Appointment</legend>
+        {% if current_user.role == "doctor" %}
+            <p>Doctor logged In</p>
+        {% elif current_user.role =="patient" %}
+            <p>Patient logged In</p>
+        {% else %}
+            <p>Admin logged In</p>
+        {% endif %}
+            <div class="form-group mb-2">
+                {{ form.date.label(class="form-control-label") }}
+                {% if form.date.errors %}
+                {{ form.date(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.date.errors %}
+                    <span>
+                        {{ error }}
+                    </span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.date(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group mb-2">
+                {{ form.description.label(class="form-control-label") }}
+                {% if form.description.errors %}
+                {{ form.description(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.description.errors %}
+                    <span>
+                        {{ error }}
+                    </span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.description(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info mt-2") }}
+        </div>
+    </form>
+
+    {% for appointment in appointments %}
+    <article class="media content-section d-flex flex-row">
+        <div class="media-body">
+            <div class="article-metadata">
+                {% if (appointment.patient_id == None) %}
+                    <p>available</p>
+                {% else %}
+                    <p>Already Booked</p>
+                {% endif %}
+                
+                <small class="text-muted">{{ appointment.date.strftime('%Y-%m-%d') }}</small>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% endblock %}

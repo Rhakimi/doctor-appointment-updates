@@ -1,0 +1,30 @@
+db.drop_all()
+>>> db.create_all()
+>>> from flaskblog import db
+>>> from flaskblog.models import User, Post
+>>> user = User(username='rahman', email='rahman@gmail.com', password=pw_hash, is_admin=True, role='doctor')
+>>> post = Post(title='rahman', content='rahman@gmail.com', user_id=1)
+>>> db.session.add(user)
+>>> db.session.commit()
+>>> User.query.all()
+[User('rahman', 'rahman@gmail.com', 'default.jpg')]
+>>>
+
+from sqlalchemy import create_engine
+>>> engine = create_engine('sqlite:///C:\\Users\\Hkhaliqi\\Desktop\\Flask_blog\\site.db')
+>>> Post.__table__.drop()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "C:\Users\\AppData\Local\Programs\Python\Python39\lib\site-packages\sqlalchemy\sql\schema.py", line 975, in drop
+    bind = _bind_or_error(self)
+  File "C:\Users\AppData\Local\Programs\Python\Python39\lib\site-packages\sqlalchemy\sql\base.py", line 1658, in _bind_or_error
+    raise exc.UnboundExecutionError(msg)
+sqlalchemy.exc.UnboundExecutionError: Table object 'post' is not bound to an Engine or Connection.  Execution can not proceed without a database to execute against.
+>>> Post.__table__.drop(engine)
+>>> Post.__table__.create(engine)
+
+
+from flask_bcrypt import Bcrypt
+app = Flask(__name__)
+bcrypt = Bcrypt(app)
+pw_hash = bcrypt.generate_password_hash('admin123').decode('utf-8')
