@@ -1,54 +1,17 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="content-section">
-    <form action="" method="post">
-        {{ form.hidden_tag() }}
-        <fieldset class="form-group">
-            <legend class="border-bottm mb-4"> Schedule Appointment</legend>
-        {% if current_user.role == "doctor" %}
-            <p>Doctor logged In</p>
-        {% elif current_user.role =="patient" %}
-            <p>Patient logged In</p>
-        {% else %}
-            <p>Admin logged In</p>
-        {% endif %}
-            <div class="form-group mb-2">
-                {{ form.name.label(class="form-control-label") }}
-                {% if form.name.errors %}
-                {{ form.name(class="form-control form-control-lg is-invalid") }}
-                <div class="invalid-feedback">
-                    {% for error in form.name.errors %}
-                    <span>
-                        {{ error }}
-                    </span>
-                    {% endfor %}
-                </div>
-                {% else %}
-                {{ form.name(class="form-control form-control-lg") }}
-                {% endif %}
-            </div>
-            <div class="form-group mb-2">
-                <div class="form-check">
-                    {{ form.is_approved(class="form-check-input") }}
-                    {{ form.is_approved.label(class="form-check-label ") }}
-                </div>
-            </div>
-        </fieldset>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info mt-2") }}
-        </div>
-    </form>
-
+   
     {% for doctor in doctors %}
     <article class="media content-section d-flex flex-row">
         <div class="media-body">
             <div class="article-metadata">
-                    <p>{{ doctor.id}}</p>
-                    <p>{{ doctor.name}}</p>
+                    <p><b>Doctor ID= </b>{{ doctor.id}}</p>
+                    <p><b>Docter= </b>{{ doctor.name}}</p>
                     {% if doctor.is_approved==false %}
-                        <a href="{{ url_for('approve_doctor', doctor_id=doctor.id) }}">{{ doctor.is_approved}}</a>
+                     <p> <b>Approval is </b><a href="{{ url_for('approve_doctor', doctor_id=doctor.id) }}">{{ doctor.is_approved}}</a></p>
                     {% else %}
-                        <p>{{ doctor.is_approved}}</p>
+                        <p><b>Approval is </b> {{ doctor.is_approved}}</p>
                     {% endif %}
             </div>
         </div>

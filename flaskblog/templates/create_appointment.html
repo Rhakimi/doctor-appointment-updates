@@ -6,9 +6,9 @@
         <fieldset class="form-group">
             <legend class="border-bottm mb-4"> Schedule Appointment</legend>
         {% if current_user.role == "doctor" %}
-            <p>Doctor logged In</p>
+            <p><b><u>Doctor logged In</u></b></p>
         {% elif current_user.role =="patient" %}
-            <p>Patient logged In</p>
+            <p><b><u>Patient logged In</u></b></p>
         {% else %}
             <p>Admin logged In</p>
         {% endif %}
@@ -55,8 +55,13 @@
             <div class="article-metadata">
                 {% if (appointment.patient_id == None) %}
                     <p>available</p>
+                   <p>Appointment Added By <b><i><u>Dr. {{appointment.doctor.name}}</u></i></b></p>
+
                 {% else %}
                     <p>Already Booked</p>
+                    <p>Appointment Added By <b><i><u>Dr. {{appointment.doctor.name}}</u></i></b></p>
+                    <p>Appointment Booked By <b><i><u>{{appointment.patient.name}}</u></i></b></p>
+
                 {% endif %}
                 
                 <small class="text-muted">{{ appointment.date.strftime('%Y-%m-%d') }}</small>

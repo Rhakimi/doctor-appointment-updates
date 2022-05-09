@@ -5,7 +5,7 @@ from fileinput import filename
 from flask import render_template, url_for, flash, redirect, request, abort
 from sqlalchemy import null
 from flaskblog import app, db, bcrypt
-from flaskblog.forms import DoctorForm, RegistrationForm, LoginForm, UpdateAccountForm, AppointmentForm
+from flaskblog.forms import DoctorForm, RegistrationForm, LoginForm, AppointmentForm
 from flaskblog.models import Doctor, Patient, User, Appointment
 from flask_login import current_user, login_user, logout_user, login_required
 
@@ -105,20 +105,30 @@ def logout():
 @login_required
 def create_appointment():
     appointments = Appointment.query.filter(Appointment.id>0).order_by(Appointment.id.desc())
+    print("---",appointments)
     form = AppointmentForm()
     if form.validate_on_submit():
         if current_user.role == 'doctor':
-            appointment = Appointment(date=form.date.data, doctor_id=current_user.id, description=form.description.data)
+            print("---", dir(current_user))
+            appointment = Appointment(date=form.date.data, doctor_id=current_user.doctor[0].id, description=form.description.data)
             db.session.add(appointment)
             db.session.commit()
             flash('Your Schedule Added!', 'success')
 
         else:
             appointment = Appointment.query.filter_by(date=form.date.data).first()
-            appointment.patient_id = current_user.id
-            db.session.add(appointment)
-            db.session.commit()
-            flash('Your booked the date!', 'success')
+            if appointment:
+                if appointment.patient_id:
+                    flash('Sorry Date Has already been booked !', 'success')
+                    return redirect(url_for('create_appointment'))
+                else:
+                    appointment.patient_id = current_user.patient[0].id
+                    db.session.add(appointment)
+                    db.session.commit()
+                    flash('Your booked the date!', 'success')
+            else:
+                flash('Sorry No Appointment Available On the Date Selected !', 'success')
+                return redirect(url_for('create_appointment'))
         # flash('Your booked the date!', 'success')
         return redirect(url_for('create_appointment'))
     return render_template('create_appointment.html', title='New Appointment', 
@@ -129,7 +139,7 @@ def create_appointment():
 def approvals():
     doctors = Doctor.query.all()
     form = DoctorForm()
-    return render_template('approvals.html', title='New Appointment', legend='Create Appointment', form=form, doctors=doctors)
+    return render_template('approvals.html', title='New Appointment', legend='Create Appointment', doctors=doctors)
 
 @app.route("/approve_doctor/<int:doctor_id>", methods=['GET', 'POST'])
 @login_required

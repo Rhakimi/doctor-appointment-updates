@@ -14,8 +14,8 @@ class User(db.Model, UserMixin):
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
     role = db.Column(db.String(20), nullable=False)
-    doctor = db.relationship('Doctor', backref='user', lazy=True)
-    patient = db.relationship('Patient', backref='user', lazy=True)
+    doctor = db.relationship('Doctor', backref='doctor', lazy=True)
+    patient = db.relationship('Patient', backref='patient', lazy=True)
 
 class Doctor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -43,4 +43,4 @@ class Appointment(db.Model):
     patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=True)
 
     def __repr__(self):
-        return f"Appointment('{self.date}', '{self.doctor_id}', '{self.patient_username}')"
+        return f"Appointment('{self.date}', '{self.doctor_id}', '{self.patient_id}')"
