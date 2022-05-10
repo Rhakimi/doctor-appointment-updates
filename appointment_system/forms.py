@@ -3,7 +3,7 @@ from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, DateField,SelectField
 from wtforms.validators import DataRequired, Length, EqualTo, Email, ValidationError
-from flaskblog.models import User
+from appointment_system.models import User
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', 

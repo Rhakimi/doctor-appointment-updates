@@ -4,9 +4,9 @@ from PIL import Image
 from fileinput import filename
 from flask import render_template, url_for, flash, redirect, request, abort
 from sqlalchemy import null
-from flaskblog import app, db, bcrypt
-from flaskblog.forms import DoctorForm, RegistrationForm, LoginForm, AppointmentForm
-from flaskblog.models import Doctor, Patient, User, Appointment
+from appointment_system import app, db, bcrypt
+from appointment_system.forms import DoctorForm, RegistrationForm, LoginForm, AppointmentForm
+from appointment_system.models import Doctor, Patient, User, Appointment
 from flask_login import current_user, login_user, logout_user, login_required
 
 @app.route("/")
