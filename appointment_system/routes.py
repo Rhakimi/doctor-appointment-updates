@@ -1,22 +1,92 @@
+from ast import Pass
 import secrets
 import os
 from PIL import Image
 from fileinput import filename
 from flask import render_template, url_for, flash, redirect, request, abort
-from sqlalchemy import null
+from sqlalchemy import and_
 from appointment_system import app, db, bcrypt
-from appointment_system.forms import DoctorForm, RegistrationForm, LoginForm, AppointmentForm
-from appointment_system.models import Doctor, Patient, User, Appointment
+from appointment_system.forms import DoctorForm, MakeAppointment, RegistrationForm, LoginForm, AppointmentForm, CreateSchedule
+from appointment_system.models import Doctor, Patient, User, Appointment, Schedule
 from flask_login import current_user, login_user, logout_user, login_required
+
 
 @app.route("/")
 @app.route("/home")
 def home():
     page = request.args.get('page', 1, type=int)
+    doctors = Doctor.query.all()
     # posts = Post.query.filter_by(is_approved=True).order_by(Post.date_posted.desc()).paginate(page=page, per_page=1)
-    return render_template('home.html')
+    
+    return render_template('home.html', doctors=doctors)
     # return render_template('home.html', posts=posts)
 
+@app.route("/doctor/schedule/<int:id>")
+def doctor_schedule(id):
+    doctor = Doctor.query.filter_by(id=id).first()
+    return render_template('doctor_schedule.html', schedules=doctor.schedule)
+
+
+@app.route("/create/schedule", methods=['GET', 'POST'])
+def create_schedule():
+    form = CreateSchedule()
+    schedules = Schedule.query.filter_by(doctor_id=current_user.id).all()
+    if form.validate_on_submit():
+        
+        new_schedule= Schedule(title=form.title.data, doctor_id=current_user.id, start_date=form.start_date.data,
+                                end_date=form.end_date.data)
+        db.session.add(new_schedule)
+        db.session.commit()
+        return redirect(url_for('create_schedule'))
+    return render_template('create_schedule.html', form=form, schedules=schedules)
+
+@app.route("/view/doctor/schedule/<int:id>")
+def view_doctor_schedule(id):
+    schedules = Schedule.query.filter_by(doctor_id=id).all()
+    return render_template('view_doctor_schedules.html', schedules=schedules)
+
+
+@app.route("/create/appointment/<int:id>", methods=['GET', 'POST'])
+def patient_create_appointment(id):
+    form = MakeAppointment()
+    form.doctor_id.data = id
+    form.schedule_id.data = request.args.get('schedule_id')
+    if form.validate_on_submit():
+        desired_schedule = Schedule.query.filter_by(id=form.schedule_id.data).first()
+        incoming_date_exist = db.session.query(Appointment)\
+            .filter(and_(Appointment.schedule_id == form.schedule_id.data,
+                         Appointment.date == form.date.data)).all()
+        if incoming_date_exist:
+            flash("this date booked before please choose a different one!", 'info')
+            return render_template('book_appointment.html', form=form)
+        if form.date.data >= desired_schedule.start_date and form.date.data <= desired_schedule.end_date:
+            patient = Patient.query.filter_by(user_id=current_user.id).first()
+            new_appintment = Appointment(date=form.date.data, schedule_id=form.schedule_id.data,
+                                        doctor_id=form.doctor_id.data, description=form.reason.data, patient_id= patient.id)
+            db.session.add(new_appintment)
+            db.session.commit()
+            flash("Your appointment booked successfully!", 'success')
+            return redirect(url_for('view_doctor_schedule', id=id))
+        flash('Please choose correct Date!', 'info')
+    return render_template('book_appointment.html', form=form)
+
+@app.route("/view/booked/appointment")
+def user_view_appointment():
+    patient = Patient.query.filter_by(user_id=current_user.id).first()
+    print(patient)
+    my_appointment = db.session.query(Appointment.date, Appointment.description, Doctor.name, Doctor.email)\
+                    .join(Doctor, Doctor.id==Appointment.doctor_id).filter(Appointment.patient_id==patient.id).all()
+    return render_template('my_appointment.html', appointments=my_appointment)
+
+@app.route("/view/booked/patients")
+def booked_patients():
+    
+    # patients = db.session.query(Appointment.date, Appointment.description, Patient.name, Patient.email).join(Patient, Appointment.patient_id==Patient.id).filter(Appointment.doctor_id==current_user.id).all()
+    # patients = db.session.query(Appointment.date, Appointment.description, Patient.name, Patient.email).filter(Appointment.doctor_id==current_user.id).all()
+    patients = db.session.query(Appointment.date, Appointment.description, Patient.name, Patient.email).join(Patient, Appointment.patient_id==Patient.id).filter(Appointment.doctor_id==current_user.id).all()
+    print("---------------",patients)
+    # print("---------------",patients)
+    return render_template('view_booked_patients.html', patients=patients)
 
 
 
@@ -35,11 +105,13 @@ def register_user():
             doctor = Doctor(name=form.username.data, email=form.email.data, user_id=user.id)
             db.session.add(doctor)
             db.session.commit()
+            flash('your account is created, Kindly Wait For admin approval', 'success')
+
         elif form.role.data == 'patient':
             patient = Patient(name=form.username.data, email=form.email.data, user_id=user.id)
             db.session.add(patient)
             db.session.commit()
-        flash('your account is created', 'success')
+            flash('your account is created', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
@@ -50,6 +122,9 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
+        if not user:
+            flash('your Email or Password is incorrect!', 'warning')
+            return render_template('login.html', form=form)
         if user.role == 'doctor':
             doctor = Doctor.query.filter_by(email=form.email.data).first()
             if doctor.is_approved == False:

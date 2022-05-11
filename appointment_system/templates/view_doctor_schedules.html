@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="col-md-12 mt-5">
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Title</th>
+                <th scope="col">Start Date</th>
+                <th scope="col">End Date</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for schedule in schedules %}
+                    <tr>
+                        <th scope="row">{{ schedule.id}}</th>
+                        <td>{{ schedule.title }}</td>
+                        <td>{{ schedule.start_date }}</td>
+                        <td>{{ schedule.end_date }}</td>
+                        {% if current_user.role == 'patient' %}
+                            <td><a href="{{ url_for('patient_create_appointment', id=schedule.doctor_id, schedule_id=schedule.id)}}" class="btn btn-info">Book</a></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

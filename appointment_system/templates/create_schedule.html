@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="col-md-12 col-offset-4">
+
+
+    <div class="content-section">
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+               <h5> {{ form.title.label(class="form-control-label text-capitalize") }}</h5>
+                {% if form.title.errors %}
+                    {{ form.title(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for errors in form.name.errors %}
+                            <span> {{ errors }} </span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.title(class="form-control form-control-lg input_style", placeholder="Enter the schedule title") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <h5>{{ form.start_date.label(class="form-control-label text-capitalize mt-2") }}</h5>
+                {% if form.start_date.errors %}
+                    {{ form.start_date(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for errors in form.start_date.errors %}
+                            <span> {{ errors }} </span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.start_date(class="form-control form-control-lg input_style") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+               <h5>{{ form.end_date.label(class="form-control-label text-capitalize mt-2") }}</h5> 
+                {% if form.end_date.errors %}
+                    {{ form.end_date(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for errors in form.end_date.errors %}
+                            <span> {{ errors }} </span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.end_date(class="form-control form-control-lg input_style") }}
+                {% endif %}
+            </div>
+           
+            <div class="float-right">
+                {{ form.submit(class="btn btn-outline-info mt-3") }}
+            </div>
+        </form>
+    </div>
+
+
+
+
+
+
+
+
+</div>
+<div class="col-md-12 col-offset-2">
+    <table class="table">
+        <thead <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Title</th>
+            <th scope="col">Start Date</th>
+            <th scope="col">End Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for schedule in schedules %}
+            <tr>
+                <th scope="row">{{ schedule.id}}</th>
+                <td>{{ schedule.title }}</td>
+                <td>{{ schedule.start_date }}</td>
+                <td>{{ schedule.end_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

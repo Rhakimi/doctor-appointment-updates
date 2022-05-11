@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="col-md-12 ">
+        <table class="table ">
+            <thead  >
+              <tr>
+                <th scope="col">Appointment Date</th>
+                <th scope="col">Description</th>
+                <th scope="col">Doctor Name</th>
+                <th scope="col">Doctor email</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                    <tr>
+                        <th scope="row">{{ appointment.date}}</th>
+                        <td>{{ appointment.description }}</td>
+                        <td>{{ appointment.name }}</td>
+                        <td>{{ appointment.email }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

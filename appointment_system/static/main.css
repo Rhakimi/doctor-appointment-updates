@@ -4,6 +4,16 @@ body {
   margin-top: 5rem;
 }
 
+.app-title {
+  background-image: url('profile_pics/background-image.jpg');
+  height: 486px;
+}
+
+.app-title > h1 {
+  border: 5px solid white;
+  border-radius: 5px;
+}
+
 a {
   text-decoration: none;
 }

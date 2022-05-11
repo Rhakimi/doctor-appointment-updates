@@ -1,21 +1,23 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="content-section">
-   
-    {% for doctor in doctors %}
-    <article class="media content-section d-flex flex-row">
-        <div class="media-body">
-            <div class="article-metadata">
-                    <p><b>Doctor ID= </b>{{ doctor.id}}</p>
-                    <p><b>Docter= </b>{{ doctor.name}}</p>
-                    {% if doctor.is_approved==false %}
-                     <p> <b>Approval is </b><a href="{{ url_for('approve_doctor', doctor_id=doctor.id) }}">{{ doctor.is_approved}}</a></p>
-                    {% else %}
-                        <p><b>Approval is </b> {{ doctor.is_approved}}</p>
-                    {% endif %}
-            </div>
-        </div>
-    </article>
-    {% endfor %}
-</div>
+<table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col"> Doctor Id</th>
+        <th scope="col">Name</th>
+        <th scope="col">Approve Status</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for doctor in doctors %}
+            <tr>
+                <th scope="row">{{ doctor.id}}</th>
+                <td>{{ doctor.name}}</td>
+                {% if doctor.is_approved==false %}
+                <td><a href="{{ url_for('approve_doctor', doctor_id=doctor.id) }}">Pending</a></td>
+                {% else %}
+                <td>{{ doctor.is_approved}}</td>
+                {%endif%}
+            </tr>
+        {% endfor %}
 {% endblock %}
