@@ -9,6 +9,7 @@
                     <th scope="col">Description</th>
                     <th scope="col">Doctor Name</th>
                     <th scope="col">Doctor email</th>
+                    <th scope="col">Cancle</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -18,6 +19,8 @@
                             <td>{{ appointment.description }}</td>
                             <td>{{ appointment.name }}</td>
                             <td>{{ appointment.email }}</td>
+                            <td> <a href="{{ url_for('cancle_appointment',id=appointment.id)}}" class="btn btn-danger"> Cancel</a></td>
+
                         </tr>
                     {% endfor %}
                 </tbody>

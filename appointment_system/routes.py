@@ -80,7 +80,7 @@ def patient_create_appointment(id):
 @app.route("/view/booked/appointment")
 def user_view_appointment():
     patient = Patient.query.filter_by(user_id=current_user.id).first()
-    my_appointment = db.session.query(Appointment.date, Appointment.description, Doctor.name, Doctor.email)\
+    my_appointment = db.session.query(Appointment.id,Appointment.date, Appointment.description, Doctor.name, Doctor.email)\
                     .join(Doctor, Doctor.user_id==Appointment.doctor_id).filter(Appointment.patient_id==patient.id).all()
     return render_template('my_appointment.html', appointments=my_appointment)
 
@@ -257,6 +257,13 @@ def page_not_found(e):
 @app.errorhandler(500)
 def page_not_found(e):
     return render_template("500.html"),500
+
+@app.route("/cancle_appointment/<int:id>")
+def cancle_appointment(id):
+    appointment = Appointment.query.filter_by(id=id).first()
+    db.session.delete(appointment)
+    db.session.commit()
+    return redirect(url_for('user_view_appointment'))
     
 
 
