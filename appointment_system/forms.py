@@ -6,7 +6,7 @@ from flask_login import current_user
 from sqlalchemy import DATE, DateTime
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, DateField,SelectField, HiddenField
 from wtforms.validators import DataRequired, Length, EqualTo, Email, ValidationError
-from appointment_system.models import User
+from appointment_system.models import Schedule, User
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', 
@@ -79,6 +79,9 @@ class CreateSchedule(FlaskForm):
         if start_date.data < datetime.date.today():
             raise ValidationError("Please choose a proper date!")
 
+ 
+  
+
 class MakeAppointment(FlaskForm):
     doctor_id= HiddenField('doctor_id')
     schedule_id= HiddenField('schedule_id')
@@ -101,3 +104,17 @@ class AppointmentForm(FlaskForm):
     date = DateField('Appointment Date')
     description = TextAreaField('Description', validators=[DataRequired()])
     submit = SubmitField('Add')
+
+class UpdateSchedule(FlaskForm):
+    start_date = DateField('Update Start Date', validators=[DataRequired()], default= datetime.date.today() )
+    end_date = DateField('Update End Date', validators=[DataRequired()])
+    title = TextAreaField('Update Title', validators=[DataRequired()])
+    submit = SubmitField('submit')
+
+    def validate_end_date(self, end_date):
+        if end_date.data < self.start_date.data:
+            raise ValidationError("Please choose a proper date!")
+    
+    def validate_start_date(self, start_date):
+        if start_date.data < datetime.date.today():
+            raise ValidationError("Please choose a proper date!")

@@ -1,4 +1,5 @@
 from ast import Pass
+import sched
 import secrets
 import os
 from PIL import Image
@@ -6,7 +7,7 @@ from fileinput import filename
 from flask import render_template, url_for, flash, redirect, request, abort
 from sqlalchemy import and_
 from appointment_system import app, db, bcrypt
-from appointment_system.forms import DoctorForm, MakeAppointment, RegistrationForm, LoginForm, AppointmentForm, CreateSchedule
+from appointment_system.forms import DoctorForm, MakeAppointment, RegistrationForm, LoginForm, AppointmentForm, CreateSchedule, UpdateSchedule
 from appointment_system.models import Doctor, Patient, User, Appointment, Schedule
 from flask_login import current_user, login_user, logout_user, login_required
 
@@ -32,7 +33,6 @@ def create_schedule():
     form = CreateSchedule()
     schedules = Schedule.query.filter_by(doctor_id=current_user.id).all()
     if form.validate_on_submit():
-        
         new_schedule= Schedule(title=form.title.data, doctor_id=current_user.id, start_date=form.start_date.data,
                                 end_date=form.end_date.data)
         db.session.add(new_schedule)
@@ -216,4 +216,21 @@ def approve_doctor(doctor_id):
     db.session.commit()
     flash('doctor approved', 'success')
     return redirect(url_for('approvals'))
+
+
+@app.route("/update/doctor/schedule/<int:id>", methods=['GET','POST'])
+def edit_doctor_schedule(id):
+    schedule = Schedule.query.filter_by(id=id).first()
+    form = UpdateSchedule()
+    if form.validate_on_submit():
+        schedule.title= form.title.data
+        schedule.start_date= form.start_date.data
+        schedule.end_date= form.end_date.data
+        db.session.commit()
+        return redirect(url_for('create_schedule'))
+    return render_template('update_doctor_schedule.html', form=form )
+    
+
+
+
 

@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+
 <div class="col-md-12">
 
 
@@ -52,36 +53,4 @@
         </form>
     </div>
 
-
-
-
-
-
-
-
-</div>
-<div class="table-wrapper">
-    <table class="table">
-        <thead <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Title</th>
-            <th scope="col">Start Date</th>
-            <th scope="col">End Date</th>
-            <th scope="col">Update</th>
-
-            </tr>
-        </thead>
-        <tbody>
-            {% for schedule in schedules %}
-            <tr>
-                <th scope="row">{{ schedule.id}}</th>
-                <td>{{ schedule.title }}</td>
-                <td>{{ schedule.start_date }}</td>
-                <td>{{ schedule.end_date }}</td>
-                <td><a href="{{ url_for('edit_doctor_schedule', id=schedule.id)}}" class="btn btn-info">Update</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
 {% endblock %}

@@ -9,7 +9,9 @@
                     <th scope="col">Title</th>
                     <th scope="col">Start Date</th>
                     <th scope="col">End Date</th>
+                    {% if current_user.role == 'patient' %}
                     <th scope="col">Action</th>
+                    {% endif %}
                 </tr>
                 </thead>
                 <tbody>
