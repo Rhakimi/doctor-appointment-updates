@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
@@ -31,6 +32,9 @@ class RegistrationForm(FlaskForm):
         validators=[
             DataRequired()
         ])
+
+    specialization = StringField('Specialization')
+    
     submit = SubmitField('Sign Up')
 
     def validate_username(self, username):
@@ -42,6 +46,11 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user:
             raise ValidationError('email already take!')
+    
+    def validate_specialization(self, specialization):
+        if (self.role.data == 'doctor'):
+            if (specialization.data == ''):
+                raise ValidationError('specialization can not be empty!')
 
 class LoginForm(FlaskForm):
     email = StringField('Email', 

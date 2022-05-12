@@ -13,11 +13,13 @@
 </div>
     {% for doctor in doctors %}
     <div class="card my-3">
-        <div class="card-header ">
-          <h3>
+        <div class="card-header d-flex align-items-center">
+          <h3 class="mb-0">
             <i class="bi bi-person-badge-fill"></i>
             Dr.{{doctor.name}}
           </h3>
+          <div style="width: 5px;"></div>
+          <i style="font-weight: 500;">({{doctor.specialization}})</i>
         </div>
         <div class="card-body">
           <h5 class="card-title">Email : {{doctor.email}}</h5> 

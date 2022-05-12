@@ -73,22 +73,14 @@ def patient_create_appointment(id):
 @app.route("/view/booked/appointment")
 def user_view_appointment():
     patient = Patient.query.filter_by(user_id=current_user.id).first()
-    print(patient)
     my_appointment = db.session.query(Appointment.date, Appointment.description, Doctor.name, Doctor.email)\
                     .join(Doctor, Doctor.id==Appointment.doctor_id).filter(Appointment.patient_id==patient.id).all()
     return render_template('my_appointment.html', appointments=my_appointment)
 
 @app.route("/view/booked/patients")
 def booked_patients():
-    
-    # patients = db.session.query(Appointment.date, Appointment.description, Patient.name, Patient.email).join(Patient, Appointment.patient_id==Patient.id).filter(Appointment.doctor_id==current_user.id).all()
-    # patients = db.session.query(Appointment.date, Appointment.description, Patient.name, Patient.email).filter(Appointment.doctor_id==current_user.id).all()
     patients = db.session.query(Appointment.date, Appointment.description, Patient.name, Patient.email).join(Patient, Appointment.patient_id==Patient.id).filter(Appointment.doctor_id==current_user.id).all()
-    print("---------------",patients)
-    # print("---------------",patients)
     return render_template('view_booked_patients.html', patients=patients)
-
-
 
 @app.route("/register_user", methods=['GET', 'POST'])
 def register_user():
@@ -102,7 +94,7 @@ def register_user():
         db.session.commit()
         user = User.query.filter_by(username=form.username.data).first()
         if form.role.data == 'doctor':
-            doctor = Doctor(name=form.username.data, email=form.email.data, user_id=user.id)
+            doctor = Doctor(name=form.username.data, email=form.email.data, user_id=user.id, specialization=form.specialization.data)
             db.session.add(doctor)
             db.session.commit()
             flash('your account is created, Kindly Wait For admin approval', 'success')

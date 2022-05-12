@@ -22,7 +22,7 @@ class Doctor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    # specialization = db.Column(db.String(120), nullable=False)
+    specialization = db.Column(db.String(120), nullable=False)
     appointment = db.relationship('Appointment', backref='doctor', lazy=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     is_approved = db.Column(db.Boolean, nullable=False, default=False)

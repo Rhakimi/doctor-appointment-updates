@@ -1,23 +1,27 @@
 {% extends "layout.html" %}
 {% block content %}
-<table class="table">
+<div class="table-wrapper">
+  <table class="table table-striped">
     <thead class="thead-dark">
       <tr>
         <th scope="col"> Doctor Id</th>
         <th scope="col">Name</th>
-        <th scope="col">Approve Status</th>
+        <th scope="col">Approval Status</th>
       </tr>
     </thead>
     <tbody>
-        {% for doctor in doctors %}
-            <tr>
-                <th scope="row">{{ doctor.id}}</th>
-                <td>{{ doctor.name}}</td>
-                {% if doctor.is_approved==false %}
-                <td><a href="{{ url_for('approve_doctor', doctor_id=doctor.id) }}">Pending</a></td>
-                {% else %}
-                <td>{{ doctor.is_approved}}</td>
-                {%endif%}
-            </tr>
-        {% endfor %}
+      {% for doctor in doctors %}
+        <tr>
+          <th scope="row">{{ doctor.id}}</th>
+          <td>{{ doctor.name}}</td>
+          {% if doctor.is_approved==false %}
+          <td><a href="{{ url_for('approve_doctor', doctor_id=doctor.id) }}">Pending</a></td>
+          {% else %}
+          <td>{{ doctor.is_approved}}</td>
+          {%endif%}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table> 
+</div>
 {% endblock %}
