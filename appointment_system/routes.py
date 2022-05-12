@@ -32,7 +32,14 @@ def doctor_schedule(id):
 def create_schedule():
     form = CreateSchedule()
     schedules = Schedule.query.filter_by(doctor_id=current_user.id).all()
+
     if form.validate_on_submit():
+        schedules = Schedule.query.filter_by(doctor_id=current_user.id)\
+            .filter(((Schedule.start_date >= form.start_date.data) & (Schedule.start_date <= form.end_date.data) | (Schedule.end_date >= form.start_date.data) & (Schedule.end_date <= form.end_date.data))).all()
+        if schedules:
+            flash('Date Conflict!', 'danger')
+            return redirect(url_for('create_schedule'))
+            
         new_schedule= Schedule(title=form.title.data, doctor_id=current_user.id, start_date=form.start_date.data,
                                 end_date=form.end_date.data)
         db.session.add(new_schedule)
@@ -74,7 +81,7 @@ def patient_create_appointment(id):
 def user_view_appointment():
     patient = Patient.query.filter_by(user_id=current_user.id).first()
     my_appointment = db.session.query(Appointment.date, Appointment.description, Doctor.name, Doctor.email)\
-                    .join(Doctor, Doctor.id==Appointment.doctor_id).filter(Appointment.patient_id==patient.id).all()
+                    .join(Doctor, Doctor.user_id==Appointment.doctor_id).filter(Appointment.patient_id==patient.id).all()
     return render_template('my_appointment.html', appointments=my_appointment)
 
 @app.route("/view/booked/patients")
@@ -222,13 +229,34 @@ def approve_doctor(doctor_id):
 def edit_doctor_schedule(id):
     schedule = Schedule.query.filter_by(id=id).first()
     form = UpdateSchedule()
+    form.title.data = schedule.title
+    form.start_date.data = schedule.start_date
+    form.end_date.data = schedule.end_date
+    print('=================================> UPDATE')
     if form.validate_on_submit():
+        schedules = Schedule.query.filter_by(doctor_id=current_user.id)\
+            .filter(((Schedule.start_date >= form.start_date.data) & (Schedule.start_date <= form.end_date.data) | (Schedule.end_date >= form.start_date.data) & (Schedule.end_date <= form.end_date.data))).all()
+
+        if schedules and schedule in schedules:
+            schedules.remove(schedule)
+
+        if schedules:
+            flash('Date Conflict!', 'danger')
+            return redirect(url_for('create_schedule'))
         schedule.title= form.title.data
         schedule.start_date= form.start_date.data
         schedule.end_date= form.end_date.data
         db.session.commit()
         return redirect(url_for('create_schedule'))
     return render_template('update_doctor_schedule.html', form=form )
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html"),404
+
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template("500.html"),500
     
 
 

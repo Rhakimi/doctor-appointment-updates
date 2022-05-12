@@ -15,7 +15,7 @@
           <th scope="row">{{ doctor.id}}</th>
           <td>{{ doctor.name}}</td>
           {% if doctor.is_approved==false %}
-          <td><a href="{{ url_for('approve_doctor', doctor_id=doctor.id) }}">Pending</a></td>
+          <td><a href="{{ url_for('approve_doctor', doctor_id=doctor.id) }}" class="btn btn-info">Pending</a></td>
           {% else %}
           <td>{{ doctor.is_approved}}</td>
           {%endif%}
