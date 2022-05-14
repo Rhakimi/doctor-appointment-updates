@@ -46,7 +46,7 @@
                         {% endif %}
                         {% if current_user.role == 'doctor' %}
                         <a class="nav-item nav-link btn btn-outline-success" href="{{ url_for('booked_patients') }}">
-                            Booked Patinets</a>
+                            Appointments Booked by Patients</a>
                         {% endif %}
                         {% if current_user.is_authenticated %}
                         {% if current_user.is_admin == True %}

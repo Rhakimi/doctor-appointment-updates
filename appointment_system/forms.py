@@ -73,11 +73,11 @@ class CreateSchedule(FlaskForm):
 
     def validate_end_date(self, end_date):
         if end_date.data < self.start_date.data:
-            raise ValidationError("Please choose a proper date!")
+            raise ValidationError("End date lower than start date!")
     
     def validate_start_date(self, start_date):
         if start_date.data < datetime.date.today():
-            raise ValidationError("Please choose a proper date!")
+            raise ValidationError("Start date lower than current date!")
 
  
   
@@ -113,8 +113,8 @@ class UpdateSchedule(FlaskForm):
 
     def validate_end_date(self, end_date):
         if end_date.data < self.start_date.data:
-            raise ValidationError("Please choose a proper date!")
+            raise ValidationError("Start date Higher Than End date!")
     
     def validate_start_date(self, start_date):
         if start_date.data < datetime.date.today():
-            raise ValidationError("Please choose a proper date!")
+            raise ValidationError("Start date lower than Today's date!")

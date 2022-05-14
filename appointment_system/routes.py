@@ -37,13 +37,15 @@ def create_schedule():
         schedules = Schedule.query.filter_by(doctor_id=current_user.id)\
             .filter(((Schedule.start_date >= form.start_date.data) & (Schedule.start_date <= form.end_date.data) | (Schedule.end_date >= form.start_date.data) & (Schedule.end_date <= form.end_date.data))).all()
         if schedules:
-            flash('Date Conflict!', 'danger')
+            flash('Date Conflict!, Date already in the schedule', 'danger')
             return redirect(url_for('create_schedule'))
             
         new_schedule= Schedule(title=form.title.data, doctor_id=current_user.id, start_date=form.start_date.data,
                                 end_date=form.end_date.data)
         db.session.add(new_schedule)
         db.session.commit()
+        flash("the schedule added successfully!", 'success')
+
         return redirect(url_for('create_schedule'))
     return render_template('create_schedule.html', form=form, schedules=schedules)
 
@@ -64,7 +66,7 @@ def patient_create_appointment(id):
             .filter(and_(Appointment.schedule_id == form.schedule_id.data,
                          Appointment.date == form.date.data)).all()
         if incoming_date_exist:
-            flash("this date booked before please choose a different one!", 'info')
+            flash("this date is already booked by another patient, please choose a different date!", 'info')
             return render_template('book_appointment.html', form=form)
         if form.date.data >= desired_schedule.start_date and form.date.data <= desired_schedule.end_date:
             patient = Patient.query.filter_by(user_id=current_user.id).first()
@@ -227,28 +229,28 @@ def approve_doctor(doctor_id):
 
 @app.route("/update/doctor/schedule/<int:id>", methods=['GET','POST'])
 def edit_doctor_schedule(id):
-    schedule = Schedule.query.filter_by(id=id).first()
-    form = UpdateSchedule()
-    form.title.data = schedule.title
-    form.start_date.data = schedule.start_date
-    form.end_date.data = schedule.end_date
-    print('=================================> UPDATE')
+    form=UpdateSchedule()
+    schedule1 = Schedule.query.filter_by(id=id).first()
+    # print('=================================> UPDATE')
     if form.validate_on_submit():
+    
         schedules = Schedule.query.filter_by(doctor_id=current_user.id)\
             .filter(((Schedule.start_date >= form.start_date.data) & (Schedule.start_date <= form.end_date.data) | (Schedule.end_date >= form.start_date.data) & (Schedule.end_date <= form.end_date.data))).all()
-
-        if schedules and schedule in schedules:
-            schedules.remove(schedule)
-
+        
         if schedules:
-            flash('Date Conflict!', 'danger')
+            flash('Date Conflict! Date already in the schedules', 'danger')
             return redirect(url_for('create_schedule'))
-        schedule.title= form.title.data
-        schedule.start_date= form.start_date.data
-        schedule.end_date= form.end_date.data
+        schedule1.title= form.title.data
+        schedule1.start_date= form.start_date.data
+        schedule1.end_date= form.end_date.data
         db.session.commit()
+        # print('=================================> new date',form.end_date.data)
+        flash("the schedule updated successfully!", 'success')
         return redirect(url_for('create_schedule'))
-    return render_template('update_doctor_schedule.html', form=form )
+    form.title.data = schedule1.title
+    form.start_date.data = schedule1.start_date
+    form.end_date.data = schedule1.end_date
+    return render_template('update_doctor_schedule.html', form=form)
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -265,7 +267,12 @@ def cancle_appointment(id):
     db.session.commit()
     return redirect(url_for('user_view_appointment'))
     
-
-
+@app.route("/delete_schedule/<int:id>")
+def delete_doctor_schedule(id):
+    schedule = Schedule.query.filter_by(id=id).first()
+    db.session.delete(schedule)
+    db.session.commit()
+    return redirect(url_for('create_schedule'))
+    
 
 
