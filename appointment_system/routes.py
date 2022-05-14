@@ -35,7 +35,7 @@ def create_schedule():
 
     if form.validate_on_submit():
         schedules = Schedule.query.filter_by(doctor_id=current_user.id)\
-            .filter(((Schedule.start_date >= form.start_date.data) & (Schedule.start_date <= form.end_date.data) | (Schedule.end_date >= form.start_date.data) & (Schedule.end_date <= form.end_date.data))).all()
+            .filter(((Schedule.start_date <= form.start_date.data) & (Schedule.end_date >= form.start_date.data) | (Schedule.start_date <= form.end_date.data) & (Schedule.end_date >= form.end_date.data))).all()
         if schedules:
             flash('Date Conflict!, Date already in the schedule', 'danger')
             return redirect(url_for('create_schedule'))
@@ -233,10 +233,17 @@ def edit_doctor_schedule(id):
     schedule1 = Schedule.query.filter_by(id=id).first()
     # print('=================================> UPDATE')
     if form.validate_on_submit():
+
+        # schedules = Schedule.query.filter_by(doctor_id=current_user.id)\
+        #     .filter(((Schedule.start_date <= form.start_date.data) & (Schedule.end_date >= form.start_date.data) | (Schedule.start_date <= form.end_date.data) & (Schedule.end_date >= form.end_date.data))).all()
+
     
         schedules = Schedule.query.filter_by(doctor_id=current_user.id)\
-            .filter(((Schedule.start_date >= form.start_date.data) & (Schedule.start_date <= form.end_date.data) | (Schedule.end_date >= form.start_date.data) & (Schedule.end_date <= form.end_date.data))).all()
+             .filter(((Schedule.start_date <= form.start_date.data) & (Schedule.end_date >= form.start_date.data) | (Schedule.start_date <= form.end_date.data) & (Schedule.end_date >= form.end_date.data))).all()
         
+        if schedules and schedule1 in schedules:
+            schedules.remove(schedule1)
+
         if schedules:
             flash('Date Conflict! Date already in the schedules', 'danger')
             return redirect(url_for('create_schedule'))

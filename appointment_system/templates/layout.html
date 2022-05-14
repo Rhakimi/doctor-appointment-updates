@@ -42,7 +42,7 @@
                         {% endif %}
                         {% if current_user.role == 'patient' %}
                         <a class="nav-item nav-link btn btn-outline-success"
-                            href="{{ url_for('user_view_appointment') }}">My Appointment</a>
+                            href="{{ url_for('user_view_appointment') }}">My Appointments</a>
                         {% endif %}
                         {% if current_user.role == 'doctor' %}
                         <a class="nav-item nav-link btn btn-outline-success" href="{{ url_for('booked_patients') }}">
